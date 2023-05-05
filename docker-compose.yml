@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  django_web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    user: root
+    command: >
+      sh -c "chmod u=rwx,g=rwx,o=rwx /app/script.sh &&
+      /app/script.sh"
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: "kevin_admin"
+      POSTGRES_PASSWORD: "my_super_secret_password"
+      POSTGRES_DB: "my_awesome_postgres_db"
+      PGPORT: "5432"
+    volumes:
+      - postgres-db:/data/postgres
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-db:

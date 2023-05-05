@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  django_web:
+    build: .
+    expose:
+      - 8000
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    command: >
+      sh -c "chmod u=rwx,g=rwx,o=rwx /app/script.sh &&
+      /app/script.sh"
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    env_file:
+      - ./.env
+    volumes:
+      - postgres-db:/data/postgres
+    ports:
+      - "5432:5432"
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - django_web
+volumes:
+  postgres-db:
